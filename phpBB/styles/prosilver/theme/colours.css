@@ -8,8 +8,8 @@
 /*	colours and backgrounds for common.css */
 html,
 body {
-	background-color: #f5f5f5;
-	color: #47536b;
+	background-color: #F5F7FA;
+	color: #536482;
 }
 
 .wrap {
@@ -94,23 +94,22 @@ th a:hover {
 	color: #ffffff;
 }
 
-.headerbar,
-.forumbg {
-	background-color: #13a4ec;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#80d5ff), color-stop(0.1%, #0077b3), color-stop(30%, #13a4ec), to(#13a4ec));
-	background-image: linear-gradient(to bottom, #80d5ff 0%, #0077b3 0.1%, #13a4ec 30%, #13a4ec 100%);
-	background-repeat: repeat-x;
+.headerbar, .forumbg {
+	background-color: #4B7246;
+	/*background-image: -webkit-linear-gradient(top, #6ACEFF 0%, #0076B1 2px, #12A3EB 92px, #12A3EB 100%);
+	background-image: linear-gradient(to bottom, #6ACEFF 0%,#0076B1 2px,#12A3EB 92px,#12A3EB 100%);
+	background-repeat: repeat-x;*/
 }
 
 .forabg {
-	background-color: #0077b3;
-	background-image: -webkit-gradient(linear, left top, left bottom, from(#80d5ff), color-stop(0.1%, #13a4ec), color-stop(30%, #0077b3), to(#0077b3));
-	background-image: linear-gradient(to bottom, #80d5ff 0%, #13a4ec 0.1%, #0077b3 30%, #0077b3 100%);
-	background-repeat: repeat-x;
+	background-color: #4B7246;
+	/*background-image: -webkit-linear-gradient(top, #6ACEFF 0%, #12A3EB 2px, #0076B1 92px, #0076B1 100%);
+	background-image: linear-gradient(to bottom, #6ACEFF 0%,#12A3EB 2px,#0076B1 92px,#0076B1 100%);
+	background-repeat: repeat-x;*/
 }
 
 .navbar {
-	background-color: #c9dee8;
+	background-color: #e3f2e1;
 }
 
 .panel {
@@ -802,7 +801,7 @@ dd.profile-warnings {
 }
 
 /*  icon images */
-.site_logo { background-image: url("./images/site_logo.svg"); }
+.site_logo { background-image: url("./images/IMG_8629_cropped.jpg"); }
 
 /*	colours and backgrounds for cp.css */
 
