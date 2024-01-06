@@ -11,6 +11,7 @@
 *
 */
 
+
 class phpbb_mock_extension_manager extends \phpbb\extension\manager
 {
 	public function __construct($phpbb_root_path, $extensions = array(), $container = null)

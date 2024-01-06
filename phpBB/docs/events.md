@@ -274,6 +274,12 @@ acp_overall_footer_after
 * Since: 3.1.0-a1
 * Purpose: Add content below the footer in the ACP
 
+acp_overall_footer_body_after
+===
+* Location: adm/style/overall_footer.html
+* Since: 3.3.10-RC1
+* Purpose: Add content before the `</body>` tag but after the $SCRIPTS var, i.e. after the js scripts have been loaded
+
 acp_overall_header_body_before
 ===
 * Location: adm/style/overall_header.html
@@ -557,6 +563,12 @@ acp_simple_footer_after
 * Location: adm/style/simple_footer.html
 * Since: 3.1.0-a1
 * Purpose: Add content below the simple footer in the ACP
+
+acp_simple_footer_body_after
+===
+* Location: adm/style/simple_footer.html
+* Since: 3.3.10-RC1
+* Purpose: Add content before the `</body>` tag but after the $SCRIPTS var, i.e. after the js scripts have been loaded
 
 acp_simple_header_body_before
 ===
@@ -2488,6 +2500,13 @@ ucp_agreement_terms_before
 * Since: 3.1.0-b3
 * Purpose: Add content before the terms of agreement text at user registration
 
+ucp_footer_content_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_footer.html
+* Since: 3.3.12-RC1
+* Purpose: Add optional elements after tab panels content in UCP
+
 ucp_friend_list_after
 ===
 * Locations:
@@ -2501,6 +2520,13 @@ ucp_friend_list_before
     + styles/prosilver/template/ucp_zebra_friends.html
 * Since: 3.1.0-a4
 * Purpose: Add optional elements before list of friends in UCP
+
+ucp_header_content_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_header.html
+* Since: 3.3.12-RC1
+* Purpose: Add optional elements before tab panels content in UCP
 
 ucp_header_friends_offline_username_full_append
 ===
@@ -2530,6 +2556,13 @@ ucp_header_friends_online_username_full_prepend
 * Since: 3.2.10-RC1
 * Purpose: Prepend information to online friends username in UCP
 
+ucp_main_bookmarks_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_main_bookmarks.html
+* Since: 3.3.8-RC1
+* Purpose: Add content right after the topic title viewing UCP bookmarks
+
 ucp_main_front_user_activity_after
 ===
 * Locations:
@@ -2557,6 +2590,41 @@ ucp_main_front_user_activity_prepend
     + styles/prosilver/template/ucp_main_front.html
 * Since: 3.1.11-RC1
 * Purpose: Add content before first user activity info viewing UCP front page
+
+ucp_main_subscribed_topic_title_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_main_subscribed.html
+* Since: 3.3.8-RC1
+* Purpose: Add content right after the topic title viewing UCP subscribed topics
+
+ucp_notifications_content_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_notifications.html
+* Since: 3.3.12-RC1
+* Purpose: Add optional elements after UCP notification options tab content
+
+ucp_notifications_content_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_notifications.html
+* Since: 3.3.12-RC1
+* Purpose: Add optional elements before UCP notification options tab content
+
+ucp_notifications_form_after
+===
+* Locations:
+    + styles/prosilver/template/ucp_notifications.html
+* Since: 3.3.12-RC1
+* Purpose: Add optional elements after HTMP form in UCP notification options tab
+
+ucp_notifications_form_before
+===
+* Locations:
+    + styles/prosilver/template/ucp_notifications.html
+* Since: 3.3.12-RC1
+* Purpose: Add optional elements before HTMP form in UCP notificationoptions tab
 
 ucp_pm_history_post_buttons_after
 ===
@@ -3277,6 +3345,13 @@ viewtopic_body_postrow_content_after
     + styles/prosilver/template/viewtopic_body.html
 * Since: 3.2.4-RC1
 * Purpose: Add content after the message content in topics views
+
+viewtopic_body_postrow_content_before
+===
+* Locations:
+    + styles/prosilver/template/viewtopic_body.html
+* Since: 3.3.11-RC1
+* Purpose: Add content before the message content in topics views
 
 viewtopic_body_postrow_custom_fields_after
 ===

@@ -30,6 +30,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 	{
 		parent::setUp();
 
+		$this->db = null;
 		$this->extension_manager = $this->create_extension_manager();
 	}
 
@@ -95,7 +96,10 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 		$this->assertEquals(array('vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
 		$this->extension_manager->enable('vendor2/bar');
-		$this->assertEquals(array('vendor2/bar', 'vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
+
+		// We should see the extension as being disabled
+		$this->assertEquals(array('vendor2/bar', 'vendor2/foo'), array_keys($this->create_extension_manager()->all_enabled()));
+
 		$this->assertEquals(array('vendor/moo', 'vendor2/bar', 'vendor2/foo'), array_keys($this->extension_manager->all_configured()));
 
 		$this->assertEquals(4, vendor2\bar\ext::$state);
@@ -119,7 +123,9 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 		$this->assertEquals(array('vendor2/foo'), array_keys($this->extension_manager->all_enabled()));
 		$this->extension_manager->disable('vendor2/foo');
-		$this->assertEquals(array(), array_keys($this->extension_manager->all_enabled()));
+
+		$this->assertEquals([], array_keys($this->extension_manager->all_enabled()));
+
 		$this->assertEquals(array('vendor/moo', 'vendor2/foo'), array_keys($this->extension_manager->all_configured()));
 
 		$this->assertTrue(vendor2\foo\ext::$disabled);
@@ -147,9 +153,9 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 
 	protected function create_extension_manager($with_cache = true)
 	{
-
 		$config = new \phpbb\config\config(array('version' => PHPBB_VERSION));
 		$db = $this->new_dbal();
+		$phpbb_dispatcher = new phpbb_mock_event_dispatcher();
 		$factory = new \phpbb\db\tools\factory();
 		$db_tools = $factory->get($db);
 		$phpbb_root_path = __DIR__ . './../../phpBB/';
@@ -180,7 +186,7 @@ class phpbb_extension_manager_test extends phpbb_database_test_case
 			'phpbb_ext',
 			__DIR__ . '/',
 			$php_ext,
-			($with_cache) ? new \phpbb\cache\service(new phpbb_mock_cache(), $config, $db, $phpbb_root_path, $php_ext) : null
+			($with_cache) ? new \phpbb\cache\service(new phpbb_mock_cache(), $config, $db, $phpbb_dispatcher, $phpbb_root_path, $php_ext) : null
 		);
 	}
 }

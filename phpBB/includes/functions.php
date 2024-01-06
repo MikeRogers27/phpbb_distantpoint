@@ -263,49 +263,68 @@ function phpbb_version_compare($version1, $version2, $operator = null)
 // functions used for building option fields
 
 /**
-* Pick a language, any language ...
-*/
-function language_select($default = '')
+ * Pick a language, any language ...
+ *
+ * @param string $default	Language ISO code to be selected by default in the dropdown list
+ * @param array $langdata	Language data in format of array(array('lang_iso' => string, lang_local_name => string), ...)
+ *
+ * @return string			HTML options for language selection dropdown list.
+ */
+function language_select($default = '', array $langdata = [])
 {
 	global $db;
 
-	$sql = 'SELECT lang_iso, lang_local_name
-		FROM ' . LANG_TABLE . '
-		ORDER BY lang_english_name';
-	$result = $db->sql_query($sql);
+	if (empty($langdata))
+	{
+		$sql = 'SELECT lang_iso, lang_local_name
+			FROM ' . LANG_TABLE . '
+			ORDER BY lang_english_name';
+		$result = $db->sql_query($sql);
+		$langdata = (array) $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+	}
 
 	$lang_options = '';
-	while ($row = $db->sql_fetchrow($result))
+	foreach ($langdata as $row)
 	{
 		$selected = ($row['lang_iso'] == $default) ? ' selected="selected"' : '';
 		$lang_options .= '<option value="' . $row['lang_iso'] . '"' . $selected . '>' . $row['lang_local_name'] . '</option>';
 	}
-	$db->sql_freeresult($result);
 
 	return $lang_options;
 }
 
 /**
-* Pick a template/theme combo,
-*/
-function style_select($default = '', $all = false)
+ * Pick a template/theme combo
+ *
+ * @param string $default	Style ID to be selected by default in the dropdown list
+ * @param bool $all			Flag indicating if all styles data including inactive ones should be fetched
+ * @param array $styledata	Style data in format of array(array('style_id' => int, style_name => string), ...)
+ *
+ * @return string			HTML options for style selection dropdown list.
+ */
+function style_select($default = '', $all = false, array $styledata = [])
 {
 	global $db;
 
-	$sql_where = (!$all) ? 'WHERE style_active = 1 ' : '';
-	$sql = 'SELECT style_id, style_name
-		FROM ' . STYLES_TABLE . "
-		$sql_where
-		ORDER BY style_name";
-	$result = $db->sql_query($sql);
+	if (empty($styledata))
+	{
+		$sql_where = (!$all) ? 'WHERE style_active = 1 ' : '';
+		$sql = 'SELECT style_id, style_name
+			FROM ' . STYLES_TABLE . "
+			$sql_where
+			ORDER BY style_name";
+		$result = $db->sql_query($sql);
+		$styledata = (array) $db->sql_fetchrowset($result);
+		$db->sql_freeresult($result);
+	}
 
 	$style_options = '';
-	while ($row = $db->sql_fetchrow($result))
+	foreach ($styledata as $row)
 	{
 		$selected = ($row['style_id'] == $default) ? ' selected="selected"' : '';
 		$style_options .= '<option value="' . $row['style_id'] . '"' . $selected . '>' . $row['style_name'] . '</option>';
 	}
-	$db->sql_freeresult($result);
 
 	return $style_options;
 }
@@ -1796,6 +1815,31 @@ function redirect($url, $return = false, $disable_cd_check = false)
 }
 
 /**
+ * Returns the install redirect path for phpBB.
+ *
+ * @param string $phpbb_root_path The root path of the phpBB installation.
+ * @param string $phpEx The file extension of php files, e.g., "php".
+ * @return string The install redirect path.
+ */
+function phpbb_get_install_redirect(string $phpbb_root_path, string $phpEx): string
+{
+	$script_name = (!empty($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : getenv('REQUEST_URI');
+	if (!$script_name)
+	{
+		$script_name = (!empty($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : getenv('PHP_SELF');
+	}
+
+	// Add trailing dot to prevent dirname() from returning parent directory if $script_name is a directory
+	$script_name = substr($script_name, -1) === '/' ? $script_name . '.' : $script_name;
+
+	// $phpbb_root_path accounts for redirects from e.g. /adm
+	$script_path = trim(dirname($script_name)) . '/' . $phpbb_root_path . 'install/app.' . $phpEx;
+	// Replace any number of consecutive backslashes and/or slashes with a single slash
+	// (could happen on some proxy setups and/or Windows servers)
+	return preg_replace('#[\\\\/]{2,}#', '/', $script_path);
+}
+
+/**
 * Re-Apply session id after page reloads
 */
 function reapply_sid($url, $is_route = false)
@@ -2899,7 +2943,7 @@ function get_censor_preg_expression($word)
 
 /**
 * Returns the first block of the specified IPv6 address and as many additional
-* ones as specified in the length paramater.
+* ones as specified in the length parameter.
 * If length is zero, then an empty string is returned.
 * If length is greater than 3 the complete IP will be returned
 */
@@ -2908,6 +2952,14 @@ function short_ipv6($ip, $length)
 	if ($length < 1)
 	{
 		return '';
+	}
+
+	// Handle IPv4 embedded IPv6 addresses
+	if (preg_match('/(?:\d{1,3}\.){3}\d{1,3}$/i', $ip))
+	{
+		$binary_ip = inet_pton($ip);
+		$ip_v6 = $binary_ip ? inet_ntop($binary_ip) : $ip;
+		$ip = $ip_v6 ?: $ip;
 	}
 
 	// extend IPv6 addresses
@@ -3676,15 +3728,11 @@ function phpbb_get_avatar($row, $alt, $ignore_config = false, $lazy = false)
 	{
 		if ($lazy)
 		{
-			// Determine board url - we may need it later
-			$board_url = generate_board_url() . '/';
 			// This path is sent with the base template paths in the assign_vars()
 			// call below. We need to correct it in case we are accessing from a
 			// controller because the web paths will be incorrect otherwise.
 			$phpbb_path_helper = $phpbb_container->get('path_helper');
-			$corrected_path = $phpbb_path_helper->get_web_root_path();
-
-			$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
+			$web_path = $phpbb_path_helper->get_web_root_path();
 
 			$theme = "{$web_path}styles/" . rawurlencode($user->style['style_path']) . '/theme';
 
@@ -3855,8 +3903,9 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		}
 	}
 
-	$forum_id = $request->variable('f', 0);
-	$topic_id = $request->variable('t', 0);
+	// Negative forum and topic IDs are not allowed
+	$forum_id = max(0, $request->variable('f', 0));
+	$topic_id = max(0, $request->variable('t', 0));
 
 	$s_feed_news = false;
 
@@ -3871,15 +3920,12 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		$db->sql_freeresult($result);
 	}
 
-	// Determine board url - we may need it later
-	$board_url = generate_board_url() . '/';
 	// This path is sent with the base template paths in the assign_vars()
 	// call below. We need to correct it in case we are accessing from a
 	// controller because the web paths will be incorrect otherwise.
 	/* @var $phpbb_path_helper \phpbb\path_helper */
 	$phpbb_path_helper = $phpbb_container->get('path_helper');
-	$corrected_path = $phpbb_path_helper->get_web_root_path();
-	$web_path = (defined('PHPBB_USE_BOARD_URL_PATH') && PHPBB_USE_BOARD_URL_PATH) ? $board_url : $corrected_path;
+	$web_path = $phpbb_path_helper->get_web_root_path();
 
 	// Send a proper content-language to the output
 	$user_lang = $user->lang['USER_LANG'];
@@ -3982,7 +4028,7 @@ function page_header($page_title = '', $display_online_list = false, $item_id = 
 		'_SID'				=> $_SID,
 		'SESSION_ID'		=> $user->session_id,
 		'ROOT_PATH'			=> $web_path,
-		'BOARD_URL'			=> $board_url,
+		'BOARD_URL'			=> generate_board_url() . '/',
 
 		'L_LOGIN_LOGOUT'	=> $l_login_logout,
 		'L_INDEX'			=> ($config['board_index_text'] !== '') ? $config['board_index_text'] : $user->lang['FORUM_INDEX'],
